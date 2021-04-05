@@ -1,10 +1,15 @@
 package com.github.dhiraj072.kafkatwitterdemo.twitter;
 
 import com.github.redouane59.twitter.TwitterClient;
+import com.github.redouane59.twitter.dto.tweet.Tweet;
 import com.github.redouane59.twitter.signature.TwitterCredentials;
+import com.github.scribejava.core.model.Response;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,16 +19,29 @@ public class TwitterService {
 
     public static Logger LOGGER = LoggerFactory.getLogger(TwitterService.class);
 
-    public TwitterService() {
+    private TwitterClient client;
+    private Consumer<Tweet> consumer;
+    private Future<Response> startStreamResp;
 
+    public TwitterService(Consumer<Tweet> consumer) {
+
+        this.consumer = consumer;
     }
 
     @PostConstruct
     public void init() throws IOException {
 
         LOGGER.info("Loading Twitter Service");
-        TwitterClient client = new TwitterClient(TwitterClient.OBJECT_MAPPER
+        client = new TwitterClient(TwitterClient.OBJECT_MAPPER
             .readValue(new File("credentials.json"), TwitterCredentials.class));
-        LOGGER.info("Got tweet {}", client.getTweet("1354143048159031302").getText());
+        LOGGER.info("Starting Twitter sampled stream");
+        startStreamResp = client.startSampledStream(consumer);
+    }
+
+    @PreDestroy
+    public void cleanup() {
+
+        LOGGER.info("Stopping Twitter sampled stream");
+        client.stopFilteredStream(startStreamResp);
     }
 }
