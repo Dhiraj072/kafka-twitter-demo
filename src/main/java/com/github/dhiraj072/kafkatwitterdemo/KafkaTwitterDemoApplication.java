@@ -1,5 +1,7 @@
 package com.github.dhiraj072.kafkatwitterdemo;
 
+import com.github.dhiraj072.kafkatwitterdemo.kafka.TweetSerializer;
+import com.github.redouane59.twitter.dto.tweet.Tweet;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -24,20 +26,20 @@ public class KafkaTwitterDemoApplication {
 
 		Map<String, Object> props = new HashMap<>();
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, TweetSerializer.class);
+		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, TweetSerializer.class);
 		return props;
 	}
 
 	@Bean
-	public ProducerFactory<String, String> producerFactory() {
+	public ProducerFactory<String, Tweet> producerFactory() {
 
 		return new DefaultKafkaProducerFactory<>(producerConfigs());
 	}
 
 	@Bean
-	public KafkaTemplate<String, String> kafkaTemplate() {
+	public KafkaTemplate<String, Tweet> kafkaTemplate() {
 
-		return new KafkaTemplate<>(producerFactory());
+		return new KafkaTemplate<	>(producerFactory());
 	}
 }
