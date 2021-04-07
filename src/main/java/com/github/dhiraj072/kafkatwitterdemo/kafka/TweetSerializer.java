@@ -42,7 +42,7 @@ public class TweetSerializer implements Serializer<Tweet> {
                         super.serializeAsField(bean, gen, prov);
                     } catch (InvocationTargetException e) {
 
-                        if (bean.getClass() == User.class)
+                        if (this.getName().equals("user"))
                             LOGGER.warn("Ignoring {} for field {} of {} instance", e.getClass().getName(),
                                 this.getName(), bean.getClass().getName());
                         else

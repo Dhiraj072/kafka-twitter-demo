@@ -32,17 +32,16 @@ public class TwitterService {
      * {@link TweetProducer} bean autowires here as a consumer
      */
     @Autowired
-    public TwitterService(Consumer<Tweet> consumer) {
+    public TwitterService(TwitterClient twitterClient, Consumer<Tweet> consumer) {
 
         this.consumer = consumer;
+        this.client = twitterClient;
+        LOGGER.info("Set {} {}", consumer, client);
     }
 
     @PostConstruct
-    public void init() throws IOException {
+    public void init() {
 
-        LOGGER.info("Loading Twitter Service");
-        client = new TwitterClient(TwitterClient.OBJECT_MAPPER
-            .readValue(new File("credentials.json"), TwitterCredentials.class));
         LOGGER.info("Starting Twitter sampled stream");
         startStreamResp = client.startSampledStream(consumer);
     }

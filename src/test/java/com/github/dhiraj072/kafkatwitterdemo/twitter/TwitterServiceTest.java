@@ -1,35 +1,35 @@
 package com.github.dhiraj072.kafkatwitterdemo.twitter;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import com.github.redouane59.twitter.TwitterClient;
 import com.github.redouane59.twitter.dto.tweet.Tweet;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class TwitterServiceTest {
 
-    private List<Tweet> tweetsReceived;
     private TwitterService twitterService;
+    private TwitterClient twitterClient;
+    private Consumer<Tweet> consumer;
 
     @BeforeEach
-    public void init() throws IOException, InterruptedException {
+    public void init() {
 
-        tweetsReceived = new ArrayList<>();
-        twitterService = new TwitterService((tweet) -> tweetsReceived.add(tweet));
+        twitterClient = mock(TwitterClient.class);
+        consumer = mock(Consumer.class);
+        twitterService = new TwitterService(twitterClient, consumer);
         twitterService.init();
-        Thread.sleep(1000); // wait for some tweets to be received
     }
 
     @Test
     public void test() {
 
-        assertFalse(tweetsReceived.isEmpty());
-        Tweet t = tweetsReceived.get(0);
-        assertFalse(t.getText().isEmpty());
+        verify(twitterClient, times(1)).startSampledStream(consumer);
     }
 
     @AfterEach

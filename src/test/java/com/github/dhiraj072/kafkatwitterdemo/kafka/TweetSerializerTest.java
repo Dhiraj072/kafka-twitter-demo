@@ -10,6 +10,7 @@ import com.github.redouane59.twitter.dto.tweet.Tweet;
 import com.github.redouane59.twitter.dto.tweet.TweetType;
 import com.github.redouane59.twitter.dto.user.User;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
